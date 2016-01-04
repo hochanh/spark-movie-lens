@@ -7,7 +7,7 @@ logger = logging.getLogger(__name__)
 
 
 def get_counts_and_averages(ID_and_ratings_tuple):
-    """Given a tuple (movieID, ratings_iterable) 
+    """Given a tuple (movieID, ratings_iterable)
     returns (movieID, (ratings_count, ratings_avg))
     """
     nratings = len(ID_and_ratings_tuple[1])
@@ -19,7 +19,7 @@ class RecommendationEngine:
     """
 
     def __count_and_average_ratings(self):
-        """Updates the movies ratings counts from 
+        """Updates the movies ratings counts from
         the current data self.ratings_RDD
         """
         logger.info("Counting movie ratings...")
@@ -47,9 +47,9 @@ class RecommendationEngine:
             predicted_rating_RDD.join(self.movies_titles_RDD).join(self.movies_rating_counts_RDD)
         predicted_rating_title_and_count_RDD = \
             predicted_rating_title_and_count_RDD.map(lambda r: (r[1][0][1], r[1][0][0], r[1][1]))
-        
+
         return predicted_rating_title_and_count_RDD
-    
+
     def add_ratings(self, ratings):
         """Add additional movie ratings in the format (user_id, movie_id, rating)
         """
@@ -61,18 +61,18 @@ class RecommendationEngine:
         self.__count_and_average_ratings()
         # Re-train the ALS model with the new ratings
         self.__train_model()
-        
+
         return ratings
 
     def get_ratings_for_movie_ids(self, user_id, movie_ids):
-        """Given a user_id and a list of movie_ids, predict ratings for them 
+        """Given a user_id and a list of movie_ids, predict ratings for them
         """
         requested_movies_RDD = self.sc.parallelize(movie_ids).map(lambda x: (user_id, x))
         # Get predicted ratings
         ratings = self.__predict_ratings(requested_movies_RDD).collect()
 
         return ratings
-    
+
     def get_top_ratings(self, user_id, movies_count):
         """Recommends up to movies_count top unrated movies to user_id
         """
@@ -114,4 +114,4 @@ class RecommendationEngine:
         self.seed = 5L
         self.iterations = 10
         self.regularization_parameter = 0.1
-        self.__train_model() 
+        self.__train_model()
